@@ -49,10 +49,14 @@ BEGIN
 	
 		rst <= '1';
 		reg_address <= x"00000001";
-		
       wait for 20 ns;	
 		rst <= '0';
 		reg_address <= x"0000000f";
+		wait for 20 ns;
+		reg_address <= x"0000003e";
+		wait for 20 ns;
+		reg_address <= x"00000026";
+		wait for 20 ns;
      
       wait;
    end process;
