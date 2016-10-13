@@ -28,7 +28,7 @@ architecture Behavioral of InstructionMem is
 		return temp_mem;
 	end function;
 	
-	signal instruction : rom_type := InitRomFromFile("Prueba.txt");
+	signal instruction : rom_type := InitRomFromFile("Prueba-clase.txt");
 
 begin
 	process(rst,reg_address, instruction)

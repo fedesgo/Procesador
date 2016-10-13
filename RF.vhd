@@ -1,5 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_arith.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
 
 entity RF is
     Port ( rs1 : in  STD_LOGIC_VECTOR (4 downto 0);
@@ -17,7 +19,7 @@ type rf_type is array (0 to 31) of std_logic_vector (31 downto 0);
 signal registers : rf_type :=(others => x"00000000");
 
 begin
-process(rs1,rs2,rd,rst,DataToWrite)
+process(rs1,rs2,rd,rst,DataToWrite, registers)
 	begin
 		if (rst = '1') then
 			Crs1 <= (others => '0');

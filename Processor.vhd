@@ -79,27 +79,29 @@ architecture Behavioral of Processor is
 		);
 	END COMPONENT;
 	
-signal AddTonPc, nPcToAdd, nPcToPc, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
+signal AddTonPc, nPcToAdd, AddConst, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
 signal CUToALU: std_logic_vector(5 downto 0);
 
 begin
 
 	Inst_nProgram_Counter: Program_Counter PORT MAP(
 		In_PC => AddTonPc,
-		Out_PC => nPcToPc,
+		Out_PC => nPcToAdd,
 		rst => rst,
 		clk => clk
 	);
 	
 	Inst_Program_Counter: Program_Counter PORT MAP(
-		In_PC => nPcToPc,
+		In_PC => nPcToAdd,
 		Out_PC => PcToIM,
 		rst => rst,
 		clk => clk
 	);
 	
+AddConst <= x"00000001";
+	
 	Inst_Adder: Adder PORT MAP(
-		A => x"00000001",
+		A => AddConst,
 		B => nPcToAdd,
 		Add_out => AddTonPc
 	);

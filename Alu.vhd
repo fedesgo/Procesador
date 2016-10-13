@@ -29,9 +29,9 @@ begin
 			when "000100" => --xor
 				AluResult <= A xor B;
 			when "000101" => -- orN
-				AluResult <= not(A or B);
+				AluResult <= A or (not B);
 			when "000110" => --andN
-				AluResult <= not(A and B);
+				AluResult <= A and (not B);
 			when "000111" => --xnor
 				AluResult <= A xnor B;
 			when others => -- Cae el nop
