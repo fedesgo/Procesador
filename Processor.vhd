@@ -38,7 +38,8 @@ architecture Behavioral of Processor is
 	PORT(
 		op : IN std_logic_vector(1 downto 0);
 		op3 : IN std_logic_vector(5 downto 0);          
-		ALU_op : OUT std_logic_vector(5 downto 0)
+		ALU_op : OUT std_logic_vector(5 downto 0);
+		PSR_op : OUT std_logic_vector(5 downto 0)
 		);
 	END COMPONENT;
 	
@@ -74,13 +75,35 @@ architecture Behavioral of Processor is
 	PORT(
 		A : IN std_logic_vector(31 downto 0);
 		B : IN std_logic_vector(31 downto 0);
-		AluOp : IN std_logic_vector(5 downto 0);          
+		AluOp : IN std_logic_vector(5 downto 0);
+		C : IN std_logic;
 		AluResult : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
 	
+	-----------------------VERSION3-------------------
+	COMPONENT PSR_M
+	PORT(
+		op1 : IN std_logic;
+		op2 : IN std_logic;
+		ALUr : IN std_logic_vector(31 downto 0);
+		PSR_op : IN std_logic_vector(5 downto 0);          
+		nzvc : OUT std_logic_vector(3 downto 0)
+		);
+	END COMPONENT;
+	
+	COMPONENT PSR
+	PORT(
+		clk : IN std_logic;
+		nzvc : IN std_logic_vector(3 downto 0);          
+		carry : OUT std_logic
+		);
+	END COMPONENT;
+	
 signal AddTonPc, nPcToAdd, AddConst, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
-signal CUToALU: std_logic_vector(5 downto 0);
+signal CUToALU, CUToPSRM: std_logic_vector(5 downto 0);
+signal PSRMToPSR : std_logic_vector(3 downto 0);
+signal x : std_logic;
 
 begin
 
@@ -115,7 +138,8 @@ AddConst <= x"00000001";
 	Inst_CU: CU PORT MAP(
 		op => IMToRf(31 downto 30),
 		op3 => IMToRF(24 downto 19),
-		ALU_op => CUToALU
+		ALU_op => CUToALU,
+		PSR_op => CUToPSRM
 	);
 
 	Inst_RF: RF PORT MAP(
@@ -143,8 +167,23 @@ AddConst <= x"00000001";
 	Inst_Alu: Alu PORT MAP(
 		A => RFToALU,
 		B => MuxToALU,
+		C => x,
 		AluOp => CUToALU,
 		AluResult => ALUToRF
+	);
+	
+	Inst_PSR_M: PSR_M PORT MAP(
+		op1 => RFToALU(31),
+		op2 => MuxToALU(31),
+		ALUr => ALUToRF,
+		PSR_op => CUToPSRM,
+		nzvc => PSRMToPSR
+	);
+	
+	Inst_PSR: PSR PORT MAP(
+		clk => clk,
+		nzvc => PSRMToPSR,
+		carry => x
 	);
 	
 	Pr_out <= ALUToRF;
