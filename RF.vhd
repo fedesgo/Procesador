@@ -4,9 +4,9 @@ use IEEE.STD_LOGIC_arith.ALL;
 use IEEE.STD_LOGIC_unsigned.ALL;
 
 entity RF is
-    Port ( rs1 : in  STD_LOGIC_VECTOR (4 downto 0);
-           rs2 : in  STD_LOGIC_VECTOR (4 downto 0);
-           rd : in  STD_LOGIC_VECTOR (4 downto 0);
+    Port ( rs1 : in  STD_LOGIC_VECTOR (5 downto 0);
+           rs2 : in  STD_LOGIC_VECTOR (5 downto 0);
+           rd : in  STD_LOGIC_VECTOR (5 downto 0);
            rst : in  STD_LOGIC;
            DataToWrite : in  STD_LOGIC_VECTOR (31 downto 0);
            Crs1 : out  STD_LOGIC_VECTOR (31 downto 0);
@@ -15,7 +15,7 @@ end RF;
 
 architecture Behavioral of RF is
 
-type rf_type is array (0 to 31) of std_logic_vector (31 downto 0);
+type rf_type is array (0 to 39) of std_logic_vector (31 downto 0);
 signal registers : rf_type :=(others => x"00000000");
 
 begin
