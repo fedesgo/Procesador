@@ -3,6 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity PSR is
     Port ( clk : in STD_LOGIC;
+			  rst: in STD_LOGIC;
 			  nzvc : in  STD_LOGIC_VECTOR (3 downto 0);
 			  nCWP : in STD_LOGIC;
 			  CWP : out STD_LOGIC;
@@ -18,10 +19,15 @@ begin
 process(clk)
 	begin
 		if (rising_edge(clk)) then
-			reg(4) <= nCWP;
-			reg(3 downto 0) <= nzvc;
-			carry <= reg(0);
-			CWP <= reg(4);
+			if(rst = '1') then
+				CWP <= '0';
+				carry <= '0';
+			else
+	--			reg(4) <= nCWP;
+	--			reg(3 downto 0) <= nzvc;
+				carry <= nzvc(0);
+				CWP <= nCWP;
+			end if;
 		end if;
 end process;
 
