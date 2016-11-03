@@ -68,9 +68,13 @@ process(op, op3)
 				when "010111" => 
 					ALU_op <= "000111";--xnorcc
 					PSR_op <= "000011";
-				when others =>  ALU_OP <= "100000";--nop
+				when others =>  
+					ALU_OP <= "100000";--nop
+					PSR_op <= "000000";
 			end case;
-		else ALU_op <= "100000";
+		else 
+			ALU_op <= "100000";
+			PSR_op <= "000000";
 		end if;
 	end process;
 
