@@ -103,7 +103,7 @@ architecture Behavioral of Processor is
 signal AddTonPc, nPcToAdd, AddConst, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
 signal CUToALU, CUToPSRM: std_logic_vector(5 downto 0);
 signal PSRMToPSR : std_logic_vector(3 downto 0);
-signal x : std_logic;
+signal aux_carry: std_logic;
 
 begin
 
@@ -167,7 +167,7 @@ AddConst <= x"00000001";
 	Inst_Alu: Alu PORT MAP(
 		A => RFToALU,
 		B => MuxToALU,
-		C => x,
+		C => aux_carry,
 		AluOp => CUToALU,
 		AluResult => ALUToRF
 	);
@@ -183,7 +183,7 @@ AddConst <= x"00000001";
 	Inst_PSR: PSR PORT MAP(
 		clk => clk,
 		nzvc => PSRMToPSR,
-		carry => x
+		carry => aux_carry
 	);
 	
 	Pr_out <= ALUToRF;

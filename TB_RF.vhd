@@ -48,7 +48,7 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-		rs1 <= "00001"
+		rs1 <= "00001";
       wait;
    end process;
 

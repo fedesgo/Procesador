@@ -11,6 +11,9 @@ end CU;
 architecture Behavioral of CU is
 
 begin
+
+PSR_op <= "000000";
+
 process(op, op3)
 	begin
 		if (op = "10") then
@@ -33,41 +36,41 @@ process(op, op3)
 					ALU_op <= "000111";--xnor
 				when "010000" => 
 					ALU_op <= "000000";--addcc
-					PSR_op <= "000000";
+					PSR_op <= "000001";
 				when "001000" => 
 					ALU_op <= "001000";--addx
 				when "011000" => 
 					ALU_op <= "001000";--addxcc
-					PSR_op <= "000000";
+					PSR_op <= "000001";
 				when "010100" => 
 					ALU_op <= "000001";--subcc
-					PSR_op <= "000001";
+					PSR_op <= "000010";
 				when "001100" => 
 					ALU_op <= "001001";--subx
 				when "011100" => 
 					ALU_op <= "001001";--subxcc
-					PSR_op <= "000001";
+					PSR_op <= "000010";
 				when "010010" => 
 					ALU_op <= "000010";--orcc
-					PSR_op <= "000010";
+					PSR_op <= "000011";
 				when "010001" => 
 					ALU_op <= "000011";--andcc
-					PSR_op <= "000010";
+					PSR_op <= "000011";
 				when "010011" => 
 					ALU_op <= "000100";--xorcc
-					PSR_op <= "000010";
+					PSR_op <= "000011";
 				when "010110" => 
 					ALU_op <= "000101";--orNcc
-					PSR_op <= "000010";
+					PSR_op <= "000011";
 				when "010101" => 
 					ALU_op <= "000110";--andNcc
-					PSR_op <= "000010";
+					PSR_op <= "000011";
 				when "010111" => 
 					ALU_op <= "000111";--xnorcc
-					PSR_op <= "000010";
-				when others =>  ALU_OP <= "001000";--nop
+					PSR_op <= "000011";
+				when others =>  ALU_OP <= "100000";--nop
 			end case;
-		else ALU_op <= "001000";
+		else ALU_op <= "100000";
 		end if;
 	end process;
 
