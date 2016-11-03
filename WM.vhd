@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
-entity Win_man is
+entity WM is
     Port ( rs1 : in  STD_LOGIC_VECTOR (4 downto 0);
            rs2 : in  STD_LOGIC_VECTOR (4 downto 0);
            rd : in  STD_LOGIC_VECTOR (4 downto 0);
@@ -15,9 +15,9 @@ entity Win_man is
            nrs1 : out  STD_LOGIC_VECTOR (5 downto 0);
            nrs2 : out  STD_LOGIC_VECTOR (5 downto 0);
            nrd : out  STD_LOGIC_VECTOR (5 downto 0));
-end Win_man;
+end WM;
 
-architecture Behavioral of Win_man is
+architecture Behavioral of WM is
 
 signal rs1n: integer range 0 to 39:=0;
 signal rs2n: integer range 0 to 39:=0;
