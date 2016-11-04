@@ -12,7 +12,7 @@ end PSR;
 
 architecture Behavioral of PSR is
 
-signal reg : std_logic_vector(4 downto 0) := (others =>'0');
+---signal reg : std_logic_vector(4 downto 0) := (others =>'0');
 
 begin
 

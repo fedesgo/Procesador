@@ -45,9 +45,9 @@ architecture Behavioral of Processor is
 	
 	COMPONENT RF
 	PORT(
-		rs1 : IN std_logic_vector(4 downto 0);
-		rs2 : IN std_logic_vector(4 downto 0);
-		rd : IN std_logic_vector(4 downto 0);
+		rs1 : IN std_logic_vector(5 downto 0);
+		rs2 : IN std_logic_vector(5 downto 0);
+		rd : IN std_logic_vector(5 downto 0);
 		rst : IN std_logic;
 		DataToWrite : IN std_logic_vector(31 downto 0);          
 		Crs1 : OUT std_logic_vector(31 downto 0);
@@ -95,15 +95,35 @@ architecture Behavioral of Processor is
 	COMPONENT PSR
 	PORT(
 		clk : IN std_logic;
-		nzvc : IN std_logic_vector(3 downto 0);          
+		rst : IN std_logic;
+		nzvc : IN std_logic_vector(3 downto 0);
+		nCWP : IN std_logic;          
+		CWP : OUT std_logic;
 		carry : OUT std_logic
 		);
 	END COMPONENT;
 	
+	-----------------------VERISON4-------------------
+	COMPONENT WM
+	PORT(
+		rs1 : IN std_logic_vector(4 downto 0);
+		rs2 : IN std_logic_vector(4 downto 0);
+		rd : IN std_logic_vector(4 downto 0);
+		op : IN std_logic_vector(1 downto 0);
+		op3 : IN std_logic_vector(5 downto 0);
+		cwp : IN std_logic;          
+		ncwp : OUT std_logic;
+		nrs1 : OUT std_logic_vector(5 downto 0);
+		nrs2 : OUT std_logic_vector(5 downto 0);
+		nrd : OUT std_logic_vector(5 downto 0)
+		);
+	END COMPONENT;
+
+	
 signal AddTonPc, nPcToAdd, AddConst, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
-signal CUToALU, CUToPSRM: std_logic_vector(5 downto 0);
+signal CUToALU, CUToPSRM, WMnrs1, WMnrs2, WMnrd: std_logic_vector(5 downto 0);
 signal PSRMToPSR : std_logic_vector(3 downto 0);
-signal x : std_logic;
+signal aux_carry, PSRtoWM, WMtoPSR : std_logic;
 
 begin
 
@@ -143,9 +163,9 @@ AddConst <= x"00000001";
 	);
 
 	Inst_RF: RF PORT MAP(
-		rs1 => IMToRF(18 downto 14),
-		rs2 => IMToRF(4 downto 0),
-		rd => IMToRF(29 downto 25),
+		rs1 => WMnrs1,
+		rs2 => WMnrs2,
+		rd => WMnrd,
 		rst => rst,
 		DataToWrite => ALUToRF,
 		Crs1 => RFToALU,
@@ -167,7 +187,7 @@ AddConst <= x"00000001";
 	Inst_Alu: Alu PORT MAP(
 		A => RFToALU,
 		B => MuxToALU,
-		C => x,
+		C => aux_carry,
 		AluOp => CUToALU,
 		AluResult => ALUToRF
 	);
@@ -182,8 +202,24 @@ AddConst <= x"00000001";
 	
 	Inst_PSR: PSR PORT MAP(
 		clk => clk,
+		rst => rst,
 		nzvc => PSRMToPSR,
-		carry => x
+		nCWP => WMtoPSR,
+		CWP => PSRtoWM,
+		carry => aux_carry
+	);
+	
+	Inst_WM: WM PORT MAP(
+		rs1 => IMToRF(18 downto 14),
+		rs2 => IMToRF(4 downto 0),
+		rd => IMToRF(29 downto 25),
+		op => IMToRf(31 downto 30),
+		op3 => IMToRf(24 downto 19),
+		cwp => PSRtoWM,
+		ncwp => WMtoPSR,
+		nrs1 => WMnrs1,
+		nrs2 => WMnrs2,
+		nrd => WMnrd
 	);
 	
 	Pr_out <= ALUToRF;

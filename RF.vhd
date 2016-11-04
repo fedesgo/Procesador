@@ -25,7 +25,7 @@ process(rs1,rs2,rd,rst,DataToWrite, registers)
 			Crs1 <= (others => '0');
 			Crs2 <= (others => '0');
 			registers <= (others => x"00000000");
-		elsif (rd /= "00000") then
+		elsif (rd /= "000000") then
 			registers(conv_integer(rd)) <= DataToWrite;
 		end if;
 		Crs1 <= registers(conv_integer(rs1));

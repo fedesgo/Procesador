@@ -16,7 +16,7 @@ begin
 process(op1, op2, ALUr, PSR_op)
 	begin
 		case (PSR_op) is
-			when "000000" => --addcc & addxcc
+			when "000001" => --addcc & addxcc
 				nzvc(3) <= ALUr(31);
 				if (ALUr = x"00000000") then
 					nzvc(2) <= '1';
@@ -25,7 +25,7 @@ process(op1, op2, ALUr, PSR_op)
 				nzvc(1) <= (op1 and op2 and not(ALUr(31))) or (not(op1) and not(op2) and ALUr(31));
 				nzvc(0) <= (op1 and op2) or (not(ALUr(31)) and (op1 or op2));
 				
-			when "000001" => ---subcc & subxcc
+			when "000010" => ---subcc & subxcc
 				nzvc(3) <= ALUr(31);
 				if (ALUr = x"00000000") then
 					nzvc(2) <= '1';
@@ -33,7 +33,7 @@ process(op1, op2, ALUr, PSR_op)
 				end if;
 				nzvc(1) <= (op1 and not(op2) and not(ALUr(31))) or (not(op1) and op2 and ALUr(31));
 				nzvc(0) <= (not(op1) and op2) or (ALUr(31) and (not(op1) or op2));
-			when others => ---logic cc
+			when "000011" => ---logic cc
 				nzvc(3) <= ALUr(31);
 				if (ALUr = x"00000000") then
 					nzvc(2) <= '1';
@@ -41,6 +41,8 @@ process(op1, op2, ALUr, PSR_op)
 				end if;
 				nzvc(1) <= '0';
 				nzvc(0) <= '0';
+			when others =>
+				nzvc <= (others=>'0');
 		end case;
 end process;
 
