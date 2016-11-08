@@ -1,2 +1,2 @@
 # Procesador
-Primeras dos versiones de un procesador monociclo que soporta la arquitectura SPARC-V8
+Procesador que soporta la arquitectura SPARC-V8
