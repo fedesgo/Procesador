@@ -359,7 +359,7 @@ process(op, op2, op3, cond, icc)
 				ALU_op <= "000000"; --Address = r[rs1] + r[rs1]_or_imm
 				RFDest <= '0';
 				RFSource <= "00"; --A la memoria va lo que sale de RegisterFile
-				WrEnMem <= '0';
+				WrEnMem <= '1';
 				PCSource <= "11";
 				WrEnRf <= '0';
 			end if;
