@@ -37,8 +37,16 @@ architecture Behavioral of Processor is
 	COMPONENT CU
 	PORT(
 		op : IN std_logic_vector(1 downto 0);
-		op3 : IN std_logic_vector(5 downto 0);          
+		op2 : IN std_logic_vector(2 downto 0);
+		op3 : IN std_logic_vector(5 downto 0);
+		cond : IN std_logic_vector(3 downto 0);
+		icc : IN std_logic_vector(3 downto 0);          
 		ALU_op : OUT std_logic_vector(5 downto 0);
+		RFDest : OUT std_logic;
+		RFSource : OUT std_logic_vector(1 downto 0);
+		WrEnMem : OUT std_logic;
+		PCSource : OUT std_logic_vector(1 downto 0);
+		WrEnRF : OUT std_logic_vector(1 downto 0);
 		PSR_op : OUT std_logic_vector(5 downto 0)
 		);
 	END COMPONENT;
@@ -49,9 +57,11 @@ architecture Behavioral of Processor is
 		rs2 : IN std_logic_vector(5 downto 0);
 		rd : IN std_logic_vector(5 downto 0);
 		rst : IN std_logic;
+		we : IN std_logic;
 		DataToWrite : IN std_logic_vector(31 downto 0);          
 		Crs1 : OUT std_logic_vector(31 downto 0);
-		Crs2 : OUT std_logic_vector(31 downto 0)
+		Crs2 : OUT std_logic_vector(31 downto 0);
+		Crd : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
 	
@@ -76,7 +86,7 @@ architecture Behavioral of Processor is
 		A : IN std_logic_vector(31 downto 0);
 		B : IN std_logic_vector(31 downto 0);
 		AluOp : IN std_logic_vector(5 downto 0);
-		C : IN std_logic;
+		C : IN std_logic;          
 		AluResult : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
@@ -99,9 +109,11 @@ architecture Behavioral of Processor is
 		nzvc : IN std_logic_vector(3 downto 0);
 		nCWP : IN std_logic;          
 		CWP : OUT std_logic;
-		carry : OUT std_logic
+		carry : OUT std_logic;
+		icc : OUT std_logic_vector(3 downto 0)
 		);
 	END COMPONENT;
+
 	
 	-----------------------VERISON4-------------------
 	COMPONENT WM
@@ -115,11 +127,66 @@ architecture Behavioral of Processor is
 		ncwp : OUT std_logic;
 		nrs1 : OUT std_logic_vector(5 downto 0);
 		nrs2 : OUT std_logic_vector(5 downto 0);
-		nrd : OUT std_logic_vector(5 downto 0)
+		nrd : OUT std_logic_vector(5 downto 0);
+		rego7 : OUT std_logic_vector(5 downto 0)
+		);
+	END COMPONENT;
+	
+	-----------------------VERSION6--------------------
+	COMPONENT DataMemory
+	PORT(
+		Address : IN std_logic_vector(4 downto 0);
+		DataToStore : IN std_logic_vector(31 downto 0);
+		rst : IN std_logic;
+		WE : IN std_logic;          
+		ContentMem : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
 
+	COMPONENT MuxPC
+	PORT(
+		Address : IN std_logic_vector(31 downto 0);
+		Disp30 : IN std_logic_vector(31 downto 0);
+		Disp22 : IN std_logic_vector(31 downto 0);
+		PCn : IN std_logic_vector(31 downto 0);
+		PCSelector : IN std_logic_vector(1 downto 0);          
+		out_MuxPC : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+
+	COMPONENT MuxRF
+	PORT(
+		DataMemory : IN std_logic_vector(31 downto 0);
+		AluResult : IN std_logic_vector(31 downto 0);
+		PC : IN std_logic_vector(31 downto 0);
+		RFSource : IN std_logic_vector(1 downto 0);
+		out_MuxRF : IN std_logic_vector(31 downto 0);       
+		);
+	END COMPONENT;
 	
+	COMPONENT MuxRegDest
+	PORT(
+		Rdest : IN std_logic_vector(5 downto 0);
+		Ro7 : IN std_logic_vector(5 downto 0);
+		RdSelec : IN std_logic;          
+		nRd : OUT std_logic_vector(5 downto 0)
+		);
+	END COMPONENT;
+	
+	COMPONENT SEU22
+	PORT(
+		SEU22_in : IN std_logic_vector(21 downto 0);          
+		SEU22_out : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+	COMPONENT SEU30
+	PORT(
+		SEU30_in : IN std_logic_vector(29 downto 0);          
+		SEU30_out : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+
 signal AddTonPc, nPcToAdd, AddConst, PcToIM, IMtoRF, ALUToRF, RFToALU, RFToMux, SEUToMux, MuxToALU: std_logic_vector(31 downto 0);
 signal CUToALU, CUToPSRM, WMnrs1, WMnrs2, WMnrd: std_logic_vector(5 downto 0);
 signal PSRMToPSR : std_logic_vector(3 downto 0);
@@ -157,8 +224,16 @@ AddConst <= x"00000001";
 
 	Inst_CU: CU PORT MAP(
 		op => IMToRf(31 downto 30),
+		op2 => ,
 		op3 => IMToRF(24 downto 19),
+		cond => ,
+		icc => ,
 		ALU_op => CUToALU,
+		RFDest => ,
+		RFSource => ,
+		WrEnMem => ,
+		PCSource => ,
+		WrEnRF => ,
 		PSR_op => CUToPSRM
 	);
 
@@ -167,9 +242,11 @@ AddConst <= x"00000001";
 		rs2 => WMnrs2,
 		rd => WMnrd,
 		rst => rst,
+		we => ,
 		DataToWrite => ALUToRF,
 		Crs1 => RFToALU,
-		Crs2 => RFToMux
+		Crs2 => RFToMux,
+		Crd => 
 	);
 	
 	Inst_SEU: SEU PORT MAP(
@@ -206,7 +283,8 @@ AddConst <= x"00000001";
 		nzvc => PSRMToPSR,
 		nCWP => WMtoPSR,
 		CWP => PSRtoWM,
-		carry => aux_carry
+		carry => aux_carry,
+		icc => 
 	);
 	
 	Inst_WM: WM PORT MAP(
@@ -220,6 +298,60 @@ AddConst <= x"00000001";
 		nrs1 => WMnrs1,
 		nrs2 => WMnrs2,
 		nrd => WMnrd
+	);
+	
+	Inst_DataMemory: DataMemory PORT MAP(
+		Address => ,
+		DataToStore => ,
+		rst => ,
+		WE => ,
+		ContentMem => 
+	);
+
+	Inst_MuxPC: MuxPC PORT MAP(
+		Address => ,
+		Disp30 => ,
+		Disp22 => ,
+		PCn => ,
+		PCSelector => ,
+		out_MuxPC => 
+	);
+	
+	Inst_MuxRF: MuxRF PORT MAP(
+		DataMemory => ,
+		AluResult => ,
+		PC => PcToIM,
+		RFSource => ,
+		out_MuxRF => 
+	);
+
+	Inst_MuxRegDest: MuxRegDest PORT MAP(
+		Rdest => ,
+		Ro7 => ,
+		RdSelec => ,
+		nRd => 
+	);
+	
+	Inst_SEU22: SEU22 PORT MAP(
+		SEU22_in => IMtoRF(21 downto 0),
+		SEU22_out => SEU22toAdd22
+	);
+	
+	Inst_Adder22: Adder PORT MAP(
+		A => SEU22toAdd22,
+		B => PcToIM,
+		Add_out => 
+	);
+	
+	Inst_SEU30: SEU30 PORT MAP(
+		SEU30_in => IMtoRF(29 downto 0),
+		SEU30_out => SEU30toAdd30
+	);
+	
+	Inst_Adder30: Adder PORT MAP(
+		A => SEU30toAdd30,
+		B => PcToIM,
+		Add_out => 
 	);
 	
 	Pr_out <= ALUToRF;
