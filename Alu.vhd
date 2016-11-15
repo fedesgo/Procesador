@@ -39,6 +39,10 @@ begin
 				AluResult <= A and (not B);
 			when "000111" => --xnor
 				AluResult <= A xor (not B);
+			when "001000" => --sll
+				AluResult <= to_stdlogicvector(to_bitvector(A)sll conv_integer(B));
+			when "001001" => --srl
+				AluResult <= to_stdlogicvector(to_bitvector(A)srl conv_integer(B));
 			when others => -- Cae el nop
 				AluResult <= (others=>'0');
 		end case;

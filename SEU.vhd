@@ -9,7 +9,7 @@ end SEU;
 architecture Behavioral of SEU is
 
 begin
-process(SEU_in)
+	process(SEU_in)
 	begin
 		if SEU_in(12) = '1' then
 			SEU_out(31 downto 13) <= (others=>'1');

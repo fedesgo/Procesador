@@ -14,20 +14,23 @@ entity WM is
            ncwp : out  STD_LOGIC;
            nrs1 : out  STD_LOGIC_VECTOR (5 downto 0);
            nrs2 : out  STD_LOGIC_VECTOR (5 downto 0);
-           nrd : out  STD_LOGIC_VECTOR (5 downto 0));
+           nrd : out  STD_LOGIC_VECTOR (5 downto 0);
+			  rego7 : out STD_LOGIC_VECTOR (5 downto 0));
 end WM;
 
 architecture Behavioral of WM is
 
-signal rs1n: integer range 0 to 39:=0;
-signal rs2n: integer range 0 to 39:=0;
-signal rdn: integer range 0 to 39:=0;
+signal rs1n: integer range 0 to 39 := 0;
+signal rs2n: integer range 0 to 39 := 0;
+signal rdn: integer range 0 to 39 := 0;
+signal auxo7: integer range 0 to 39 := 0;
 
 
 begin
 process(cwp,rs1,rs2,rd,op,op3)
 begin
-
+	auxo7 <= conv_integer(cwp)*16;
+	rego7 <= conv_std_logic_vector(auxo7 +6); 
 ------Save-and-Restore------
 
 	if (op="10" and op3="111100") then -- Save
